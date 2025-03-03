@@ -4,7 +4,7 @@ require_once('vendor/tecnickcom/tcpdf/tcpdf.php');
 
 // Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: index.php');
     exit();
 }
 
@@ -25,7 +25,7 @@ if ($user_info) {
     $username = $user_info['username'];  // Get the username for the welcome message
 } else {
     // If no username was found, redirect to login page
-    header('Location: login.php');
+    header('Location: index.php');
     exit();
 }
 

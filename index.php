@@ -150,7 +150,7 @@ if (isset($_POST['check_email'])) {
         <!-- Login Section -->
         <div class="form-box">
             <h2>Login to ResumeCraft</h2>
-            <form action="login.php" method="POST">
+            <form action="index.php" method="POST">
                 <div class="mb-3">
                     <label for="loginEmail" class="form-label">Email</label>
                     <input type="email" name="loginEmail" id="loginEmail" class="form-control" required>
@@ -169,7 +169,7 @@ if (isset($_POST['check_email'])) {
         <!-- Register Section -->
         <div class="form-box">
             <h2>Sign Up for ResumeCraft</h2>
-            <form id="registerForm" action="login.php" method="POST">
+            <form id="registerForm" action="index.php" method="POST">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
                     <input type="text" name="username" id="username" class="form-control" required>
@@ -215,7 +215,7 @@ if (isset($_POST['check_email'])) {
         const email = $(this).val();
         if (email) {
             $.ajax({
-                url: 'login.php',
+                url: 'index.php',
                 type: 'POST',
                 data: { check_email: email },
                 success: function(response) {
