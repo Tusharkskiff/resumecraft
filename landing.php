@@ -2,16 +2,14 @@
 session_start();
 require_once('vendor/tecnickcom/tcpdf/tcpdf.php');
 
-// Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit();
 }
 
-// Include the connection file
-require 'connection.php';  // Include the database connection
+require 'connection.php';  
 
-// Get the logged-in user's ID from the session
+
 $user_id = $_SESSION['user_id'];
 
 // Fetch the username from the login table using the user ID
@@ -22,9 +20,8 @@ $user_info = $stmt->fetch();
 
 // Check if a user was found, else handle the error
 if ($user_info) {
-    $username = $user_info['username'];  // Get the username for the welcome message
+    $username = $user_info['username'];  
 } else {
-    // If no username was found, redirect to login page
     header('Location: index.php');
     exit();
 }
@@ -42,10 +39,10 @@ $experience_data = $stmt->fetchAll();
 
 // Check if there is at least one row for experience
 if (count($experience_data) > 0) {
-    $experience_data = $experience_data[0]; // Use the first row for the form
+    $experience_data = $experience_data[0]; 
 } else {
-    // Handle the case where no data is returned
-    $experience_data = []; // Initialize an empty array to prevent errors
+    
+    $experience_data = []; 
 }
 
 $query = "SELECT * FROM education WHERE id = ?";
@@ -144,7 +141,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_education'])) 
     $completion_date = $_POST['completion_date'];
     $gpa = $_POST['gpa'];
 
-    // SQL query to update or insert education data
     $query = "INSERT INTO education (id, school, tenth_date, tenth_marks, twelfth_school, twelfth_date, twelfth_percentage, college_name, completion_date, gpa)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
               ON DUPLICATE KEY UPDATE
@@ -173,9 +169,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_education'])) 
 
 // Update Skills
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_skills'])) {
-    $skills = $_POST['skills']; // Array of skills
+    $skills = $_POST['skills']; 
 
-    // Update the skills table
     $query = "INSERT INTO skills (id, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
               ON DUPLICATE KEY UPDATE 
@@ -236,11 +231,11 @@ $user_data = $stmt->fetch();
 $query = "SELECT * FROM experience WHERE id = ?";
 $stmt = $pdo->prepare($query);
 $stmt->execute([$user_id]);
-$experience_data = $stmt->fetch(); // Fetch only the first row of experience data
+$experience_data = $stmt->fetch(); 
 
 // Check if experience data is available
 if (!$experience_data) {
-    $experience_data = []; // Initialize an empty array if no data is found
+    $experience_data = []; 
 }
 
 $query = "SELECT * FROM education WHERE id = ?";
@@ -260,89 +255,86 @@ $achievements_data = $stmt->fetch();
 
 // Check if the user clicked the download PDF link
 if (isset($_GET['download_pdf']) && $_GET['download_pdf'] == '1') {
-    // Initialize TCPDF object
     $pdf = new TCPDF();
     $pdf->SetTitle('Resume - ' . $user_data['name']);
     $pdf->AddPage();
-
-    // Set font for title
     $pdf->SetFont('helvetica', 'B', 18);
 
     // Header with name and title (with colored background)
-    $pdf->SetTextColor(255, 255, 255); // White text
-    $pdf->SetFillColor(0, 0, 0); // Black background
+    $pdf->SetTextColor(255, 255, 255); 
+    $pdf->SetFillColor(0, 0, 0); 
     $pdf->Cell(0, 15, $user_data['name'], 0, 1, 'C', 1);
-    $pdf->Ln(5); // Add space
+    $pdf->Ln(5); 
 
     // User Details Section (with icons)
-    $pdf->SetTextColor(0, 0, 0); // Reset text color to black
+    $pdf->SetTextColor(0, 0, 0); 
 
     // Email
-    $pdf->SetFont('helvetica', 'B', 12); // Bold for labels
-    $pdf->Cell(40, 10, 'Email:', 0, 0, 'L');  // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);  // Regular for values
-    $pdf->Cell(0, 10, $user_data['resume_email'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12); 
+    $pdf->Cell(40, 10, 'Email:', 0, 0, 'L');  
+    $pdf->SetFont('helvetica', '', 12);  
+    $pdf->Cell(0, 10, $user_data['resume_email'], 0, 1, 'L'); 
     
     // Phone
-    $pdf->SetFont('helvetica', 'B', 12); // Bold for labels
-    $pdf->Cell(40, 10, 'Phone:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);  // Regular for values
-    $pdf->Cell(0, 10, $user_data['phone_number'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12); 
+    $pdf->Cell(40, 10, 'Phone:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);  
+    $pdf->Cell(0, 10, $user_data['phone_number'], 0, 1, 'L'); 
 
     // Address
-    $pdf->SetFont('helvetica', 'B', 12); // Bold for labels
-    $pdf->Cell(40, 10, 'Address:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);  // Regular for values
-    $pdf->Cell(0, 10, $user_data['address'], 0, 1, 'L'); // Value in next line
-    $pdf->Ln(10); // Add space
+    $pdf->SetFont('helvetica', 'B', 12); 
+    $pdf->Cell(40, 10, 'Address:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);  
+    $pdf->Cell(0, 10, $user_data['address'], 0, 1, 'L'); 
+    $pdf->Ln(10); 
 
     // Executive Summary Section (boxed with light color)
     $pdf->SetFont('helvetica', 'B', 14);
-    $pdf->SetFillColor(240, 240, 240); // Light gray background
+    $pdf->SetFillColor(240, 240, 240); 
     $pdf->Cell(0, 10, 'Executive Summary', 0, 1, 'L', 1);
     $pdf->SetFont('helvetica', '', 12);
-    $pdf->MultiCell(0, 10, $user_data['executive_summary'], 0, 'J');
-    $pdf->Ln(5); // Add space
+    $pdf->MultiCell(0, 10, $user_data['executive_summary'], 0, 'L');  
+    $pdf->Ln(5); 
 
     // Professional Experience Section (boxed with light color)
     $pdf->SetFont('helvetica', 'B', 14);
-    $pdf->SetFillColor(240, 240, 240); // Light gray background
+    $pdf->SetFillColor(240, 240, 240); 
     $pdf->Cell(0, 10, 'Professional Experience', 0, 1, 'L', 1);
     $pdf->SetFont('helvetica', '', 12);
 
     // Check if experience data is available and print it
     if (!empty($experience_data)) {
         // Title
-        $pdf->SetFont('helvetica', 'B', 12); // Bold for labels
-        $pdf->Cell(40, 10, 'Title:', 0, 0, 'L'); // Fixed width for label
-        $pdf->SetFont('helvetica', '', 12);  // Regular for values
-        $pdf->Cell(0, 10, $experience_data['title'], 0, 1, 'L'); // Value in next line
+        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->Cell(40, 10, 'Title:', 0, 0, 'L'); 
+        $pdf->SetFont('helvetica', '', 12);  
+        $pdf->Cell(0, 10, $experience_data['title'], 0, 1, 'L'); 
 
         // Company
-        $pdf->SetFont('helvetica', 'B', 12); // Bold for labels
-        $pdf->Cell(40, 10, 'Company:', 0, 0, 'L'); // Fixed width for label
-        $pdf->SetFont('helvetica', '', 12);  // Regular for values
-        $pdf->Cell(0, 10, $experience_data['company_name'], 0, 1, 'L'); // Value in next line
+        $pdf->SetFont('helvetica', 'B', 12); 
+        $pdf->Cell(40, 10, 'Company:', 0, 0, 'L'); 
+        $pdf->SetFont('helvetica', '', 12); 
+        $pdf->Cell(0, 10, $experience_data['company_name'], 0, 1, 'L');
 
         // Type
-        $pdf->SetFont('helvetica', 'B', 12); // Bold for labels
-        $pdf->Cell(40, 10, 'Type:', 0, 0, 'L'); // Fixed width for label
-        $pdf->SetFont('helvetica', '', 12);  // Regular for values
-        $pdf->Cell(0, 10, $experience_data['type'], 0, 1, 'L'); // Value in next line
+        $pdf->SetFont('helvetica', 'B', 12); 
+        $pdf->Cell(40, 10, 'Type:', 0, 0, 'L'); 
+        $pdf->SetFont('helvetica', '', 12);  
+        $pdf->Cell(0, 10, $experience_data['type'], 0, 1, 'L'); 
 
         // From / To Dates
-        $pdf->SetFont('helvetica', 'B', 12); // Bold for labels
-        $pdf->Cell(40, 10, 'From:', 0, 0, 'L'); // Fixed width for label
-        $pdf->SetFont('helvetica', '', 12);  // Regular for values
-        $pdf->Cell(0, 10, $experience_data['start_date'] . ' To: ' . $experience_data['end_date'], 0, 1, 'L'); // Value in next line
+        $pdf->SetFont('helvetica', 'B', 12); 
+        $pdf->Cell(40, 10, 'From:', 0, 0, 'L'); 
+        $pdf->SetFont('helvetica', '', 12);  
+        $pdf->Cell(0, 10, $experience_data['start_date'] . ' To: ' . $experience_data['end_date'], 0, 1, 'L'); 
 
         // Responsibilities (start from the beginning of the line)
-        $responsibilities = trim($experience_data['responsibilities']);  // Trim leading spaces
-        $pdf->SetFont('helvetica', 'B', 12); // Bold for labels
-        $pdf->Cell(40, 10, 'Responsibilities:', 0, 0, 'L'); // Fixed width for label
-        $pdf->SetFont('helvetica', '', 12);   // Regular for values
-        $pdf->MultiCell(0, 10, $responsibilities);  // Print trimmed responsibilities
-        $pdf->Ln(5); // Add space
+        $responsibilities = trim($experience_data['responsibilities']);  
+        $pdf->SetFont('helvetica', 'B', 12); 
+        $pdf->Cell(40, 10, 'Responsibilities:', 0, 0, 'L'); 
+        $pdf->SetFont('helvetica', '', 12);   
+        $pdf->MultiCell(0, 10, $responsibilities, 0, 'L');  
+        $pdf->Ln(5); 
     } else {
         // If no experience data, show a message
         $pdf->Cell(0, 10, 'No experience data available.', 0, 1);
@@ -350,63 +342,63 @@ if (isset($_GET['download_pdf']) && $_GET['download_pdf'] == '1') {
 
     // Education Section (with a modern design)
     $pdf->SetFont('helvetica', 'B', 14);
-    $pdf->SetFillColor(240, 240, 240); // Light gray background
+    $pdf->SetFillColor(240, 240, 240);
     $pdf->Cell(0, 10, 'Education', 0, 1, 'L', 1);
     $pdf->SetFont('helvetica', '', 12);
 
     // Print Education Data
-    $pdf->SetFont('helvetica', 'B', 12);  // Bold for labels
-    $pdf->Cell(40, 10, 'School:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);   // Regular for values
-    $pdf->Cell(0, 10, $education_data['school'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12);  
+    $pdf->Cell(40, 10, 'School:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);   
+    $pdf->Cell(0, 10, $education_data['school'], 0, 1, 'L'); 
 
-    $pdf->SetFont('helvetica', 'B', 12);  // Bold for labels
-    $pdf->Cell(40, 10, '10th Date:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);   // Regular for values
-    $pdf->Cell(0, 10, $education_data['tenth_date'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12);  
+    $pdf->Cell(40, 10, '10th Date:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);   
+    $pdf->Cell(0, 10, $education_data['tenth_date'], 0, 1, 'L'); 
 
-    $pdf->SetFont('helvetica', 'B', 12);  // Bold for labels
-    $pdf->Cell(40, 10, '10th Marks:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);   // Regular for values
-    $pdf->Cell(0, 10, $education_data['tenth_marks'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12);  
+    $pdf->Cell(40, 10, '10th Marks:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);   
+    $pdf->Cell(0, 10, $education_data['tenth_marks'], 0, 1, 'L'); 
 
-    $pdf->SetFont('helvetica', 'B', 12);  // Bold for labels
-    $pdf->Cell(40, 10, '12th School:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);   // Regular for values
-    $pdf->Cell(0, 10, $education_data['twelfth_school'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12);  
+    $pdf->Cell(40, 10, '12th School:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);   
+    $pdf->Cell(0, 10, $education_data['twelfth_school'], 0, 1, 'L'); 
 
-    $pdf->SetFont('helvetica', 'B', 12);  // Bold for labels
-    $pdf->Cell(40, 10, '12th Date:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);   // Regular for values
-    $pdf->Cell(0, 10, $education_data['twelfth_date'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12);  
+    $pdf->Cell(40, 10, '12th Date:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);   
+    $pdf->Cell(0, 10, $education_data['twelfth_date'], 0, 1, 'L'); 
 
-    $pdf->SetFont('helvetica', 'B', 12);  // Bold for labels
-    $pdf->Cell(40, 10, '12th Percentage:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);   // Regular for values
-    $pdf->Cell(0, 10, $education_data['twelfth_percentage'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12);  
+    $pdf->Cell(40, 10, '12th Percentage:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);   
+    $pdf->Cell(0, 10, $education_data['twelfth_percentage'], 0, 1, 'L'); 
 
-    $pdf->SetFont('helvetica', 'B', 12);  // Bold for labels
-    $pdf->Cell(40, 10, 'College:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);   // Regular for values
-    $pdf->Cell(0, 10, $education_data['college_name'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12);  
+    $pdf->Cell(40, 10, 'College:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);   
+    $pdf->Cell(0, 10, $education_data['college_name'], 0, 1, 'L'); 
 
-    $pdf->SetFont('helvetica', 'B', 12);  // Bold for labels
-    $pdf->Cell(40, 10, 'Completion Date:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);   // Regular for values
-    $pdf->Cell(0, 10, $education_data['completion_date'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12);  
+    $pdf->Cell(40, 10, 'Completion Date:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);   
+    $pdf->Cell(0, 10, $education_data['completion_date'], 0, 1, 'L'); 
 
-    $pdf->SetFont('helvetica', 'B', 12);  // Bold for labels
-    $pdf->Cell(40, 10, 'GPA:', 0, 0, 'L'); // Fixed width for label
-    $pdf->SetFont('helvetica', '', 12);   // Regular for values
-    $pdf->Cell(0, 10, $education_data['gpa'], 0, 1, 'L'); // Value in next line
+    $pdf->SetFont('helvetica', 'B', 12);  
+    $pdf->Cell(40, 10, 'GPA:', 0, 0, 'L'); 
+    $pdf->SetFont('helvetica', '', 12);   
+    $pdf->Cell(0, 10, $education_data['gpa'], 0, 1, 'L'); 
 
-    $pdf->Ln(5); // Add space
-    $pdf->Ln();  // Adds one line space
+    $pdf->Ln(5); 
+    $pdf->Ln();  
 
 
     // Skills Section (with icons and neat presentation)
     $pdf->SetFont('helvetica', 'B', 14);
-    $pdf->SetFillColor(240, 240, 240); // Light gray background
+    $pdf->SetFillColor(240, 240, 240); 
     $pdf->Cell(0, 10, 'Skills', 0, 1, 'L', 1);
     $pdf->SetFont('helvetica', '', 12);
 
@@ -416,23 +408,24 @@ if (isset($_GET['download_pdf']) && $_GET['download_pdf'] == '1') {
             $pdf->Cell(0, 10, $skill, 0, 1);
         }
     }
-    $pdf->Ln(5); // Add space
+    $pdf->Ln(5); 
 
     // Achievements Section (boxed)
     $pdf->SetFont('helvetica', 'B', 14);
-    $pdf->SetFillColor(240, 240, 240); // Light gray background
+    $pdf->SetFillColor(240, 240, 240); 
     $pdf->Cell(0, 10, 'Achievements', 0, 1, 'L', 1);
     $pdf->SetFont('helvetica', '', 12);
-    $pdf->MultiCell(0, 10, $achievements_data['achieve']);
+    $pdf->MultiCell(0, 10, $achievements_data['achieve'], 0, 'L');  
 
     // Add a horizontal line to separate footer
     $pdf->SetLineWidth(0.5);
     $pdf->Line(10, $pdf->GetY() + 5, 200, $pdf->GetY() + 5);
 
     // Output the PDF (with download prompt)
-    $pdf->Output('resume_' . $user_data['name'] . '.pdf', 'D');  // Force download
+    $pdf->Output('resume_' . $user_data['name'] . '.pdf', 'D');  
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
