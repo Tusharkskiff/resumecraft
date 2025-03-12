@@ -1,8 +1,8 @@
 -- Table: login
 CREATE TABLE login (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(100) NOT NULL,  -- Reduced size to 100
-    email VARCHAR(100) NOT NULL UNIQUE,  -- Reduced size to 100
+    username VARCHAR(100) NOT NULL,  
+    email VARCHAR(100) NOT NULL UNIQUE,  
     password VARCHAR(255) NOT NULL
 );
 
@@ -13,7 +13,7 @@ CREATE TABLE basic (
     phone_number VARCHAR(15),
     address TEXT,
     executive_summary TEXT,
-    resume_email VARCHAR(100),  -- Added resume_email
+    resume_email VARCHAR(100),  
     FOREIGN KEY (id) REFERENCES login(id) ON DELETE CASCADE
 );
 
